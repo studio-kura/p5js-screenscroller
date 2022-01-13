@@ -28,8 +28,6 @@ const set_options = () => {
     "💦",
     "🐢",
   ];
-  const tiles = sample_color_tiles; // タイルに単色の四角を使う場合
-  // const tiles = sample_emoji_tiles; // タイルに絵文字を使う場合
 
   // 一つ一つのタイルを描く関数。
   // 四角バージョン
@@ -42,8 +40,20 @@ const set_options = () => {
     textSize(size);
     text(tile, j * size, i * size, size, size);
   };
-  const tile_draw_function = drawSquare; // タイルに単色の四角を使う場合
-  // const tile_draw_function = drawEmoji; // タイルに絵文字を使う場合
+
+  // この下の`tile_engine`は一つだけ定義できます
+  // 四角か絵文字をえらんで、他はコメントにしてください
+
+  // タイルに単色の四角を使う場合
+  // const tile_engine = {
+  //   tiles: sample_color_tiles,
+  //   tile_draw_function: drawSquare
+  // };
+  // タイルに絵文字を使う場合
+  const tile_engine = {
+    tiles: sample_emoji_tiles,
+    tile_draw_function: drawEmoji
+  };
 
   // 各ステージ（面）のマップ。数字は出したい色の tiles でのインデックス
   // 定数扱い
@@ -85,5 +95,5 @@ const set_options = () => {
   const starting_stage = 0;
 
   // この上の設定で、インスタンスを初期化！
-  screen = new ScreenScroller(tile_draw_function, starting_stage, tile_size, tiles, stages);
+  screen = new ScreenScroller(tile_engine.tile_draw_function, starting_stage, tile_size, tile_engine.tiles, stages);
 };
