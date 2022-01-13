@@ -8,8 +8,8 @@
 
 - このリポジトリーを踏み台にして使う場合: フォーク・クローン・ダウンロードしてください
 - 既存のプロジェクトに導入する場合: 
-	1. `[ScreenScroller.js](ScreenScroller.js)`と`[set_options.js](set_options.js)`をプロジェクトに含めて、既存のプロジェクトの`index.html`などで`sketch.js`と同じように呼び出す
-	1. 既存のプロジェクトの`sketch.js`でこのリポジトリーの`[sketch.js](sketch.js)`と同じように
+	1. [ScreenScroller.js](ScreenScroller.js)と[set_options.js](set_options.js)をプロジェクトに含めて、既存のプロジェクトの`index.html`などで`sketch.js`と同じように呼び出す
+	1. 既存のプロジェクトの`sketch.js`でこのリポジトリーの[sketch.js](sketch.js)と同じように
 		1. `screen`変数を用意する
 		1. `setup()`の中で`set_options()`を呼び出す
 		1. `draw()`の中で`screen.draw()`を呼び出す
