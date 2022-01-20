@@ -14,6 +14,7 @@ class ScreenScroller {
     this.current_stage = 0;
     // スクロール先はthis.stagesの中のindexです。未定の時はnull
     this.scroll_to = null;
+    this.direction = null;
 
     // 行の数（タイル単位）
     this.rows = this.stages[0].length;
@@ -76,29 +77,29 @@ class ScreenScroller {
 
   // `this.scroll_map`にそって行先のステージを調べる
   // 行き止まりの場合は`false`を返す
-  get_destination(direction = 'right') {
+  get_destination() {
     const current_stage_indices = this.get_stage_indices(this.current_stage);
     console.log('現在位置', current_stage_indices);
     // ひとまず、わかりやすいアウトを蹴る
-    if (direction == 'left' && current_stage_indices[0] < 1) {
+    if (this.direction == 'left' && current_stage_indices[0] < 1) {
       return false;
     }
-    if (direction == 'up' && current_stage_indices[1] < 1) {
+    if (this.direction == 'up' && current_stage_indices[1] < 1) {
       return false;
     }
 
     // 目的地の`this.scroll_map`の中の[x, y]を決める
     let destination_stage_indices = current_stage_indices;
-    if (direction == 'left') {
+    if (this.direction == 'left') {
       destination_stage_indices[0] = destination_stage_indices[0] - 1;
     }
-    else if (direction == 'right') {
+    else if (this.direction == 'right') {
       destination_stage_indices[0] = destination_stage_indices[0] + 1;
     }
-    else if (direction == 'up') {
+    else if (this.direction == 'up') {
       destination_stage_indices[1] = destination_stage_indices[1] - 1;
     }
-    else if (direction == 'down') {
+    else if (this.direction == 'down') {
       destination_stage_indices[1] = destination_stage_indices[1] + 1;
     }
 
@@ -119,8 +120,9 @@ class ScreenScroller {
   // このスケッチではマウスのクリックで誘発するが、きっかけはなんでもいい
   initiate_scroll(direction = 'right') {
     if (screen.scroll_progress === null) {
-      const destination = this.get_destination(direction);
-      console.log(this.current_stage, direction, destination);
+      this.direction = direction;
+      const destination = this.get_destination(this.direction);
+      console.log(this.current_stage, this.direction, destination);
       console.log('\n');
       if (destination === false) {
         return;
@@ -162,5 +164,6 @@ class ScreenScroller {
     this.current_stage = this.scroll_to;
     // 次の行先は未定
     this.scroll_to = null;
+    this.direction = null;
   }
 }
