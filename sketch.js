@@ -17,9 +17,19 @@ function draw() {
   screen.draw();
 }
 
-// マウスのボタンがクリックされたとき、もしくは画面がタッチされた陶器
-function mousePressed () {
-  // スクロールを開始させる
-  screen.initiate_scroll();
+// キーボードのカーソルキーでスクロールをはじめます
+function keyPressed() {
+  if (keyCode == UP_ARROW) {
+    screen.initiate_scroll('up');
+  }
+  else if (keyCode == DOWN_ARROW) {
+    screen.initiate_scroll('down');
+  }
+  else if (keyCode == LEFT_ARROW) {
+    screen.initiate_scroll('left');
+  }
+  else if (keyCode == RIGHT_ARROW) {
+    screen.initiate_scroll('right');
+  }
 }
 // スクロールのきっかけはゲームのキャラクターの位置などにしてみましょう
