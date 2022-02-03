@@ -54,6 +54,7 @@ class ScreenScroller {
     if (this.scroll_progress === null) {
       this.screen = this.stages[this.current_stage].slice(0);
     }
+    // 左と上に移動する場合は、進むのではなくて戻るので処理が多少複雑になります
     if (this.direction === 'left') {
       const screencols = this.screen[0].length;
       let offset = screencols - this.cols - this.scroll_progress + 2;
@@ -63,7 +64,6 @@ class ScreenScroller {
           this.tile_draw_function(i, j - offset, this.tiles[this.screen[i][j]], this.tile_size)
         }
       }
-      // this.log_screen();
     } else if (this.direction === 'up') {
       const screenrows = this.screen.length;
       let offset = screenrows - this.rows - this.scroll_progress + 2;
@@ -177,11 +177,13 @@ class ScreenScroller {
         }
       }
     } else if (this.direction === 'down') {
+      // 現在位置のステージの下に行先のステージをくっつけます
       this.screen = this.stages[this.current_stage].slice(0);
       for (var i = 0; i < this.rows; i++) {
         this.screen.push(this.stages[this.scroll_to][i].slice(0));
       }
     } else if (this.direction === 'up') {
+      // 行先のステージの下に現在位置のステージをくっつけます
       this.screen = this.stages[this.scroll_to].slice(0);
       for (var i = 0; i < this.rows; i++) {
         this.screen.push(this.stages[this.current_stage][i].slice(0));
@@ -190,6 +192,7 @@ class ScreenScroller {
     // console.log(this.direction);
     // this.log_screen();
   }
+  // 今の画面を文字で`console`に出力します
   log_screen() {
     this.screen.forEach((e) => {
       let row = '';
@@ -208,6 +211,7 @@ class ScreenScroller {
         this.screen[i].shift();
       }
     } else if (this.direction === 'down') {
+      // 上野行を抜きます。しかし、抜きすぎないように`if`
       if (this.screen.length > this.rows) {
         this.screen.shift();
       }
