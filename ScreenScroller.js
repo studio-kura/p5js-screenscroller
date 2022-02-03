@@ -23,7 +23,7 @@ class ScreenScroller {
 
     // 本当に表示される現在のマップ
     // this.stagesと違って、中身がスクルールしていると変わります
-    this.screen = this.stages[this.current_stage];
+    this.screen = this.stages[this.current_stage].slice(0);
   }
 
   // スケッチのdraw関数で呼び出される関数
@@ -51,9 +51,33 @@ class ScreenScroller {
 
   // 現在のマップを表示させる
   display_map() {
-    for (var i = 0; i < this.rows; i++) {
-      for (var j = 0; j < this.cols; j++) {
-        this.tile_draw_function(i, j, this.tiles[this.screen[i][j]], this.tile_size)
+    if (this.scroll_progress === null) {
+      this.screen = this.stages[this.current_stage].slice(0);
+    }
+    if (this.direction === 'left') {
+      const screencols = this.screen[0].length;
+      let offset = screencols - this.cols - this.scroll_progress + 2;
+      offset = offset >= 0? offset : 0;
+      for (var i = 0; i < this.rows; i++) {
+        for (var j = 0; j < screencols; j++) {
+          this.tile_draw_function(i, j - offset, this.tiles[this.screen[i][j]], this.tile_size)
+        }
+      }
+      // this.log_screen();
+    } else if (this.direction === 'up') {
+      const screenrows = this.screen.length;
+      let offset = screenrows - this.rows - this.scroll_progress + 2;
+      offset = offset >= 0? offset : 0;
+      for (var i = 0; i < screenrows; i++) {
+        for (var j = 0; j < this.cols; j++) {
+          this.tile_draw_function(i - offset, j, this.tiles[this.screen[i][j]], this.tile_size)
+        }
+      }
+    } else {
+      for (var i = 0; i < this.rows; i++) {
+        for (var j = 0; j < this.cols; j++) {
+          this.tile_draw_function(i, j, this.tiles[this.screen[i][j]], this.tile_size)
+        }
       }
     }
   }
@@ -79,7 +103,7 @@ class ScreenScroller {
   // 行き止まりの場合は`false`を返す
   get_destination() {
     const current_stage_indices = this.get_stage_indices(this.current_stage);
-    console.log('現在位置', current_stage_indices);
+    // console.log('現在位置', current_stage_indices);
     // ひとまず、わかりやすいアウトを蹴る
     if (this.direction == 'left' && current_stage_indices[0] < 1) {
       return false;
@@ -103,7 +127,7 @@ class ScreenScroller {
       destination_stage_indices[1] = destination_stage_indices[1] + 1;
     }
 
-    console.log('目的地', destination_stage_indices);
+    // console.log('目的地', destination_stage_indices);
 
     // 右や下からはみ出た場合も、蹴る
     if (
@@ -122,8 +146,6 @@ class ScreenScroller {
     if (screen.scroll_progress === null) {
       this.direction = direction;
       const destination = this.get_destination(this.direction);
-      console.log(this.current_stage, this.direction, destination);
-      console.log('\n');
       if (destination === false) {
         return;
       }
@@ -134,22 +156,71 @@ class ScreenScroller {
 
   // 2面の幅を持つマップを生成する
   generate_matrix_with_two_screens() {
-    // 画面の各行
-    for (var i = 0; i < this.rows; i++) {
-      // 今までいた面のその行と同じになる
-      this.screen[i] = this.stages[this.current_stage][i];
-      // そして、今からいく面のこの行の要素（数字）を一つずつ後ろに追加していく
-      for (var j = 0; j < this.cols; j++) {
-        this.screen[i].push(this.stages[this.scroll_to][i][j]);
+    if (this.direction === 'right') {
+      // 画面の各行
+      for (var i = 0; i < this.rows; i++) {
+        // 今までいた面のその行と同じになる
+        this.screen[i] = this.stages[this.current_stage][i].slice(0);
+        // そして、今からいく面のこの行の要素（数字）を一つずつ後ろに追加していく
+        for (var j = 0; j < this.cols; j++) {
+          this.screen[i].push(this.stages[this.scroll_to][i][j]);
+        }
+      }
+    } else if (this.direction === 'left') {
+      // 画面の各行
+      for (var i = 0; i < this.rows; i++) {
+        // 今までいた面のその行と同じになる
+        this.screen[i] = this.stages[this.scroll_to][i].slice(0);
+        // そして、今からいく面のこの行の要素（数字）を一つずつ後ろに追加していく
+        for (var j = 0; j < this.cols; j++) {
+          this.screen[i].push(this.stages[this.current_stage][i][j]);
+        }
+      }
+    } else if (this.direction === 'down') {
+      this.screen = this.stages[this.current_stage].slice(0);
+      for (var i = 0; i < this.rows; i++) {
+        this.screen.push(this.stages[this.scroll_to][i].slice(0));
+      }
+    } else if (this.direction === 'up') {
+      this.screen = this.stages[this.scroll_to].slice(0);
+      for (var i = 0; i < this.rows; i++) {
+        this.screen.push(this.stages[this.current_stage][i].slice(0));
       }
     }
+    // console.log(this.direction);
+    // this.log_screen();
+  }
+  log_screen() {
+    this.screen.forEach((e) => {
+      let row = '';
+      e.forEach((c) => {
+        row += c;
+      });
+      console.log(row);
+    });
   }
   // 次の面まで1タイルずつスクロールさせます
   advance_scroll() {
-    // 画面の各行
-    for (var i = 0; i < this.rows; i++) {
-      // その行の最初（一番左の）タイルを取り除く
-      this.screen[i].shift();
+    if (this.direction === 'right') {
+      // 画面の各行
+      for (var i = 0; i < this.rows; i++) {
+        // その行の最初（一番左の）タイルを取り除く
+        this.screen[i].shift();
+      }
+    } else if (this.direction === 'down') {
+      if (this.screen.length > this.rows) {
+        this.screen.shift();
+      }
+    } else if (this.direction === 'left') {
+      // 画面の各行
+      for (var i = 0; i < this.rows; i++) {
+        // その行の最後（一番右の）タイルを取り除く
+        // this.screen[i].pop();
+      }
+    } else if (this.direction === 'up') {
+      if (this.screen.length > this.rows) {
+        // this.screen.shift();
+      }
     }
     // 1タイル分スクロールが進んだと記録する
     this.scroll_progress ++;
@@ -158,10 +229,11 @@ class ScreenScroller {
   finalize_scroll() {
     // しばらくスクロールを止めるように
     this.scroll_progress = null;
-    // 現在のマップをそのまま行き先の面と同じにする
-    this.screen = this.stages[this.scroll_to];
     // 今までの行き先が次のスクロールの原点となる
     this.current_stage = this.scroll_to;
+    // 現在のマップをそのまま行き先の面と同じにする
+    this.screen = this.stages[this.current_stage].slice(0);
+
     // 次の行先は未定
     this.scroll_to = null;
     this.direction = null;
