@@ -57,7 +57,7 @@ class ScreenScroller {
     // 左と上に移動する場合は、進むのではなくて戻るので処理が多少複雑になります
     if (this.direction === 'left') {
       const screencols = this.screen[0].length;
-      let offset = screencols - this.cols - this.scroll_progress + 2;
+      let offset = screencols - this.cols - this.scroll_progress;
       offset = offset >= 0? offset : 0;
       for (var i = 0; i < this.rows; i++) {
         for (var j = 0; j < screencols; j++) {
@@ -66,7 +66,7 @@ class ScreenScroller {
       }
     } else if (this.direction === 'up') {
       const screenrows = this.screen.length;
-      let offset = screenrows - this.rows - this.scroll_progress + 2;
+      let offset = screenrows - this.rows - this.scroll_progress;
       offset = offset >= 0? offset : 0;
       for (var i = 0; i < screenrows; i++) {
         for (var j = 0; j < this.cols; j++) {
@@ -146,6 +146,7 @@ class ScreenScroller {
     if (screen.scroll_progress === null) {
       this.direction = direction;
       const destination = this.get_destination(this.direction);
+      // console.log(direction, destination)
       if (destination === false) {
         return;
       }
